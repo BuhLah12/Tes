@@ -104,25 +104,33 @@
         }
 
         // --- 2. FUNGSI KIRIM EMAIL BACKGROUND ---
+        // --- 2. FUNGSI KIRIM EMAIL BACKGROUND (VIA FORMSPREE) ---
         function kirimDataKeEmail(jawaban) {
             const nama = document.getElementById('nama-dia').innerText;
             
-            fetch('https://api.web3forms.com/submit', {
+            // GANTI LINK INI DENGAN URL ENDPOINT FORMSPREE MILIKMU
+            const endpointFormspree = "https://formspree.io/f/MASUKKAN_ID_FORM_DI_SINI";
+            
+            fetch(endpointFormspree, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    access_key: accessKey, 
-                    subject: 'Notifikasi Website Rahasia!',
-                    message: `Pesan baru! Target atas nama "${nama}" telah menekan tombol: ${jawaban}`,
-                    from_name: 'Sistem Pengakuan'
+                    Nama_Target: nama,
+                    Pilihan: jawaban,
+                    Pesan_Sistem: `Notifikasi: Target telah menekan tombol "${jawaban}"`
                 })
             })
-            .then(response => response.json())
-            .then(data => console.log("Status email:", data))
-            .catch(error => console.log("Gagal kirim:", error));
+            .then(response => {
+                if (response.ok) {
+                    console.log("Status: Data sukses mendarat di email via Formspree!");
+                } else {
+                    console.log("Status: Gagal dikirim oleh server Formspree.");
+                }
+            })
+            .catch(error => console.log("Status: Terjadi kesalahan jaringan:", error));
         }
 
         // --- 3. LOGIKA TOMBOL "AKU JUGA" ---
