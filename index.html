@@ -88,9 +88,6 @@
     <script>
         // --- 1. DATA PENTING ---
         const daftarNama =  ["jiska", "ziska ramadhani", "ziska"]; 
-        
-        // ⚠️ PENTING: Ganti dengan Access Key dari Web3Forms!
-        const accessKey = "025bc21d-8822-4191-8353-c1bb10b77d23"; 
 
         function cekNama() {
             const input = document.getElementById('inputNama').value.toLowerCase().trim();
@@ -103,7 +100,6 @@
             }
         }
 
-        // --- 2. FUNGSI KIRIM EMAIL BACKGROUND ---
         // --- 2. FUNGSI KIRIM EMAIL BACKGROUND (VIA FORMSPREE) ---
         function kirimDataKeEmail(jawaban) {
             const nama = document.getElementById('nama-dia').innerText;
