@@ -134,86 +134,70 @@
         </div>
 
         <div class="action-buttons">
-            <button class="btn-terima" onclick="terima()">Aku juga</button>
-            <button id="tombolMenghindar" class="btn-tolak" onclick="tolak()">Kita temanan aja</button>
+            <button class="btn-terima" onclick="kirimPesan('Aku juga)">Aku juga</button>
+            <button id="tombolMenghindar" class="btn-tolak">Kita temanan aja</button>
         </div>
     </div>
 
     <script>
-        // 1. PENGATURAN NAMA (Tulis semua kemungkinan namanya dengan HURUF KECIL)
-        const daftarNama = ["jiska", "ziska ramadhani", "ziska"]; 
+      <script>
+        // 1. DAFTAR NAMA
+        const daftarNama =  ["jiska", "ziska ramadhani", "ziska"]; 
 
-        // Fungsi untuk mengecek input nama
         function cekNama() {
             const input = document.getElementById('inputNama').value.toLowerCase().trim();
-            
             if (daftarNama.includes(input)) {
-                // Jika nama cocok, ganti halaman
                 document.getElementById('halaman-utama').style.display = 'none';
                 document.getElementById('halaman-rahasia').style.display = 'block';
-                
-                // Tampilkan nama sesuai dengan kapitalisasi yang dia ketik
                 document.getElementById('nama-dia').innerText = document.getElementById('inputNama').value;
             } else if (input !== "") {
-                // Jika salah, tampilkan pesan error
                 document.getElementById('pesan-error').style.display = 'block';
             }
         }
 
-        // Fungsi jika dia klik "Aku juga"
-        function terima() {
-            alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
-            // Aktifkan baris di bawah ini jika ingin langsung mengarahkannya ke chat WhatsApp kamu
-            // window.location.href = "https://wa.me/628xxxxxxxxxx?text=Hai,%20aku%20udah%20baca%20pesannya";
+        // 2. INTEGRASI WHATSAPP
+        // Ganti 628xxxxxxxxxx dengan nomor WA kamu (tanpa +, tanpa spasi)
+        const nomorWA = "6285735382085"; 
+
+        function kirimPesan(jawaban) {
+            const nama = document.getElementById('nama-dia').innerText;
+            const pesan = `Hai! Aku baru saja membuka website-mu. Jawabanku adalah: ${jawaban}.`;
+            const url = `https://wa.me/${nomorWA}?text=${encodeURIComponent(pesan)}`;
+            window.location.href = url;
         }
 
-        // 2. LOGIKA TOMBOL MENGHINDAR
+        // 3. LOGIKA TOMBOL
         const tombolTolak = document.getElementById('tombolMenghindar');
         let jumlahMenghindar = 0;
-        const batasMenghindar = 5; // Tombol akan lari sebanyak 5 kali
+        const batasMenghindar = 5;
 
         function aksiMenghindar(e) {
-            // Mencegah klik tidak sengaja saat disentuh di layar HP
             if(e.type === 'touchstart') { e.preventDefault(); }
 
             if (jumlahMenghindar < batasMenghindar) {
-                // Menghitung koordinat acak agar tombol tetap di dalam layar
                 const maxX = window.innerWidth - tombolTolak.clientWidth - 20;
                 const maxY = window.innerHeight - tombolTolak.clientHeight - 20;
-
-                const randomX = Math.floor(Math.random() * maxX);
-                const randomY = Math.floor(Math.random() * maxY);
-
                 tombolTolak.style.position = 'fixed';
-                tombolTolak.style.left = randomX + 'px';
-                tombolTolak.style.top = randomY + 'px';
-                
+                tombolTolak.style.left = Math.floor(Math.random() * maxX) + 'px';
+                tombolTolak.style.top = Math.floor(Math.random() * maxY) + 'px';
                 jumlahMenghindar++;
 
-                // Mengubah teks di tengah-tengah perjuangannya
-                if (jumlahMenghindar === 3) {
-                    tombolTolak.innerText = "Yakin nih?";
-                } else if (jumlahMenghindar === 4) {
-                    tombolTolak.innerText = "Coba pikir lagi...";
-                }
+                if (jumlahMenghindar === 3) tombolTolak.innerText = "Yakin nih?";
+                if (jumlahMenghindar === 4) tombolTolak.innerText = "Coba pikir lagi...";
             } else {
-                // Tombol menyerah setelah melewati batas
+                // Tombol menyerah & kirim pesan
                 tombolTolak.innerText = "Ya udah deh kalau maksa :(";
-                tombolTolak.style.backgroundColor = "#95a5a6"; // Berubah warna jadi abu-abu
+                tombolTolak.style.backgroundColor = "#95a5a6";
+                
+                // Alert + kirim WA
+                alert("Oke, nggak apa-apa kok! Terima kasih ya udah mau baca.");
+                kirimPesan("Kita temanan aja");
             }
         }
 
-        // Memasang sensor untuk mouse (PC) dan sentuhan (HP)
+        // Event Listeners
         tombolTolak.addEventListener('mouseover', aksiMenghindar);
         tombolTolak.addEventListener('touchstart', aksiMenghindar);
-
-        // Fungsi jika dia akhirnya berhasil/memaksa klik tombol "Kita temanan aja"
-        function tolak() {
-            if (jumlahMenghindar >= batasMenghindar) {
-                alert("Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya. Terima kasih udah mau nyempetin baca 😊");
-            }
-        }
     </script>
-
 </body>
 </html>
