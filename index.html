@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uji Coba Antarmuka Pengguna</title>
+    <style>
+        /* CSS: Mengatur tampilan visual agar rapi dan nyaman di HP/PC */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Mencegah layar bergeser saat tombol lari */
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            margin: 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3498db;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        /* Tombol di halaman kedua */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn-terima {
+            background-color: #2ecc71;
+            color: white;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-tolak {
+            background-color: #e74c3c;
+            color: white;
+            flex: 1;
+            min-width: 120px;
+            position: relative; /* Penting untuk animasi lari */
+            z-index: 100;
+        }
+
+        /* Menyembunyikan halaman dan pesan error dari awal */
+        #halaman-rahasia { display: none; }
+        #pesan-error { color: #e74c3c; display: none; font-size: 14px; margin-top: 10px; }
+
+        .puisi {
+            text-align: left;
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="halaman-utama" class="container">
+        <h2>Uji Coba Antarmuka</h2>
+        <p>Halo! Tolong masukkan nama panggilanmu untuk melanjutkan sesi pengujian interaksi *website* ini.</p>
+        <input type="text" id="inputNama" placeholder="Ketik nama kamu di sini..." autocomplete="off">
+        <button class="btn-primary" onclick="cekNama()">Mulai Uji Coba</button>
+        <p id="pesan-error">Nama tidak terdaftar dalam *database* sesi ini. Coba ketik lagi!</p>
+    </div>
+
+    <div id="halaman-rahasia" class="container">
+        <h2>Hai, <span id="nama-dia"></span>.</h2>
+        
+        <div class="puisi">
+            <p>Maaf ya kalau awalnya terlihat seperti kuesioner biasa.</p>
+            <p>Sebenarnya ada banyak yang mau di omongin, tapi semuanya menguap begitu saja setiap kali kita ngobrol. Di tengah rutinitasku yang tidak jelas, kehadiranmu selalu jadi sosok yang paling menyenangkan.</p>
+            <p>Jadi, karena lisan ini seakan bisu, kubiarkan kode ini yang menyampaikannya: aku suka kamu.</p>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-terima" onclick="terima()">Aku juga</button>
+            <button id="tombolMenghindar" class="btn-tolak" onclick="tolak()">Kita temanan aja</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. PENGATURAN NAMA (Tulis semua kemungkinan namanya dengan HURUF KECIL)
+        const daftarNama = ["jiska", "ziska ramadhani", "ziska"]; 
+
+        // Fungsi untuk mengecek input nama
+        function cekNama() {
+            const input = document.getElementById('inputNama').value.toLowerCase().trim();
+            
+            if (daftarNama.includes(input)) {
+                // Jika nama cocok, ganti halaman
+                document.getElementById('halaman-utama').style.display = 'none';
+                document.getElementById('halaman-rahasia').style.display = 'block';
+                
+                // Tampilkan nama sesuai dengan kapitalisasi yang dia ketik
+                document.getElementById('nama-dia').innerText = document.getElementById('inputNama').value;
+            } else if (input !== "") {
+                // Jika salah, tampilkan pesan error
+                document.getElementById('pesan-error').style.display = 'block';
+            }
+        }
+
+        // Fungsi jika dia klik "Aku juga"
+        function terima() {
+            alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
+            // Aktifkan baris di bawah ini jika ingin langsung mengarahkannya ke chat WhatsApp kamu
+            // window.location.href = "https://wa.me/628xxxxxxxxxx?text=Hai,%20aku%20udah%20baca%20pesannya";
+        }
+
+        // 2. LOGIKA TOMBOL MENGHINDAR
+        const tombolTolak = document.getElementById('tombolMenghindar');
+        let jumlahMenghindar = 0;
+        const batasMenghindar = 5; // Tombol akan lari sebanyak 5 kali
+
+        function aksiMenghindar(e) {
+            // Mencegah klik tidak sengaja saat disentuh di layar HP
+            if(e.type === 'touchstart') { e.preventDefault(); }
+
+            if (jumlahMenghindar < batasMenghindar) {
+                // Menghitung koordinat acak agar tombol tetap di dalam layar
+                const maxX = window.innerWidth - tombolTolak.clientWidth - 20;
+                const maxY = window.innerHeight - tombolTolak.clientHeight - 20;
+
+                const randomX = Math.floor(Math.random() * maxX);
+                const randomY = Math.floor(Math.random() * maxY);
+
+                tombolTolak.style.position = 'fixed';
+                tombolTolak.style.left = randomX + 'px';
+                tombolTolak.style.top = randomY + 'px';
+                
+                jumlahMenghindar++;
+
+                // Mengubah teks di tengah-tengah perjuangannya
+                if (jumlahMenghindar === 3) {
+                    tombolTolak.innerText = "Yakin nih?";
+                } else if (jumlahMenghindar === 4) {
+                    tombolTolak.innerText = "Coba pikir lagi...";
+                }
+            } else {
+                // Tombol menyerah setelah melewati batas
+                tombolTolak.innerText = "Ya udah deh kalau maksa :(";
+                tombolTolak.style.backgroundColor = "#95a5a6"; // Berubah warna jadi abu-abu
+            }
+        }
+
+        // Memasang sensor untuk mouse (PC) dan sentuhan (HP)
+        tombolTolak.addEventListener('mouseover', aksiMenghindar);
+        tombolTolak.addEventListener('touchstart', aksiMenghindar);
+
+        // Fungsi jika dia akhirnya berhasil/memaksa klik tombol "Kita temanan aja"
+        function tolak() {
+            if (jumlahMenghindar >= batasMenghindar) {
+                alert("Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya. Terima kasih udah mau nyempetin baca 😊");
+            }
+        }
+    </script>
+
+</body>
+</html>
