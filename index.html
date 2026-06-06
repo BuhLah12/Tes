@@ -123,10 +123,6 @@
                     Pesan_Sistem: `Notifikasi: Target telah menekan tombol "${jawaban}"`
                 })
             })
-            .then(response => {
-                if(response.ok) { console.log("Berhasil dikirim ke Formspree"); }
-            })
-            .catch(error => console.log("Gagal kirim:", error));
         }
 
         // --- 3. LOGIKA TOMBOL "AKU JUGA" ---
