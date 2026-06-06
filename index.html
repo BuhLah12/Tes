@@ -91,7 +91,7 @@
     <script>
         // --- 1. DATA PENTING ---
         // Ganti dengan nama target (HURUF KECIL SEMUA)
-        const daftarNama =  ["jiska", "ziska ramadhani", "ziska"];  
+        const daftarNama =  ["jiska", "ziska ramadhani", "ziska"]; 
         
         // Ganti dengan URL Endpoint dari akun Formspree milikmu
         const endpointFormspree = "https://formspree.io/f/mlgkgkon"; 
@@ -123,12 +123,16 @@
                     Pesan_Sistem: `Notifikasi: Target telah menekan tombol "${jawaban}"`
                 })
             })
+            .then(response => {
+                if(response.ok) { console.log("Berhasil dikirim ke Formspree"); }
+            })
+            .catch(error => console.log("Gagal kirim:", error));
         }
 
         // --- 3. LOGIKA TOMBOL "AKU JUGA" ---
         function aksiTerima() {
+            // Hanya memunculkan pop-up dan mengirim email (tampilan tetap utuh)
             alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
-            
             kirimDataKeEmail("Aku juga");
         }
 
@@ -165,8 +169,8 @@
 
         function aksiTolak() {
             if (jumlahMenghindar >= batasMenghindar) {
+                // Hanya memunculkan pop-up dan mengirim email (tampilan tetap utuh)
                 alert("Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya 😊");
-        
                 kirimDataKeEmail("Kita temanan aja");
             }
         }
