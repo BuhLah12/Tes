@@ -129,7 +129,7 @@
         
         <div class="puisi">
             <p>Maaf ya kalau terlihat seperti kuesioner pengumpulan data biasa.</p>
-            <p>Sebenarnya ada banyak yang di omongin, tapi semuanya selalu menguap begitu saja setiap kali kita mengobrol. Di tengah rutinitasku yang bosenin, kehadiranmu selalu jadi sosok yang paling menyenangkan.</p>
+            <p>Sebenarnya banyak yang di omongin, tapi terasa seperti menguap begitu saja setiap kali kita mengobrol. Di tengah rutinitasku yang bosenin, kehadiranmu selalu jadi sosok yang paling menyenangkan.</p>
             <p>Jadi, karena lisan ini seakan membisu, kubiarkan kode ini yang menyampaikannya: aku suka kamu.</p>
         </div>
 
@@ -141,37 +141,47 @@
 
     <script>
         // --- BAGIAN 1: PENGATURAN DATA ---
-        // 1. Masukkan semua variasi nama dia (HARUS HURUF KECIL SEMUA)
-        const daftarNama =  ["jiska", "ziska ramadhani", "ziska"];  
+        const daftarNama =  ["jiska", "ziska ramadhani", "ziska"]; 
         
-        // 2. Masukkan nomor WhatsApp kamu (awali dengan 62, tanpa spasi/tanda plus)
-        const nomorWA = "6285735382085"; 
+        // MASUKKAN ACCESS KEY DARI EMAILMU DI SINI
+        const accessKey = "025bc21d-8822-4191-8353-c1bb10b77d23"; 
 
-        // --- BAGIAN 2: LOGIKA PENGECEKAN NAMA ---
         function cekNama() {
             const input = document.getElementById('inputNama').value.toLowerCase().trim();
-            
             if (daftarNama.includes(input)) {
-                // Jika nama benar, buka halaman rahasia
                 document.getElementById('halaman-utama').style.display = 'none';
                 document.getElementById('halaman-rahasia').style.display = 'block';
-                
-                // Tampilkan nama sesuai ketikan aslinya (mempertahankan huruf kapital)
                 document.getElementById('nama-dia').innerText = document.getElementById('inputNama').value;
             } else if (input !== "") {
-                // Jika salah, munculkan alibi error
                 document.getElementById('pesan-error').style.display = 'block';
             }
         }
 
-        // --- BAGIAN 3: LOGIKA PENGIRIMAN PESAN WHATSAPP ---
-        function kirimPesan(jawaban) {
+        // --- BAGIAN 3: LOGIKA PENGIRIMAN DIAM-DIAM KE EMAIL ---
+        function kirimPesanDiamDiam(jawaban) {
             const nama = document.getElementById('nama-dia').innerText;
-            const pesan = `Hai! Aku baru saja ngebuka website-mu. Jawabanku adalah: ${jawaban}.`;
-            const url = `https://wa.me/${nomorWA}?text=${encodeURIComponent(pesan)}`;
             
-            // Arahkan browser ke aplikasi WhatsApp
-            window.location.href = url;
+            // Proses pengiriman data di background (tanpa memuat ulang halaman)
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    access_key: accessKey,
+                    subject: 'Notifikasi Website Rahasia!',
+                    message: `Target atas nama "${nama}" telah menekan tombol: ${jawaban}`,
+                    from_name: 'Website Pengakuan'
+                })
+            })
+            .then(response => {
+                // Setelah data diam-diam terkirim, munculkan alert yang natural
+                if(jawaban === "Aku juga") {
+                    alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
+                }
+            })
+            .catch(error => console.log(error));
         }
 
         // --- BAGIAN 4: LOGIKA TOMBOL MENGHINDAR ---
@@ -180,38 +190,29 @@
         const batasMenghindar = 5;
 
         function aksiMenghindar(e) {
-            // Mencegah klik tidak sengaja saat disentuh di layar HP
             if(e.type === 'touchstart') { e.preventDefault(); }
 
             if (jumlahMenghindar < batasMenghindar) {
-                // Kalkulasi agar tombol tetap berada di dalam batas layar
                 const maxX = window.innerWidth - tombolTolak.clientWidth - 20;
                 const maxY = window.innerHeight - tombolTolak.clientHeight - 20;
-
                 tombolTolak.style.position = 'fixed';
                 tombolTolak.style.left = Math.floor(Math.random() * maxX) + 'px';
                 tombolTolak.style.top = Math.floor(Math.random() * maxY) + 'px';
-                
                 jumlahMenghindar++;
 
-                // Ubah teks perlahan sesuai jumlah percobaan
-                if (jumlahMenghindar === 3) {
-                    tombolTolak.innerText = "Yakin nih?";
-                } else if (jumlahMenghindar === 4) {
-                    tombolTolak.innerText = "Coba pikir lagi...";
-                } else if (jumlahMenghindar === 5) {
-                    // Di percobaan ke-5, tombol menyerah
+                if (jumlahMenghindar === 3) tombolTolak.innerText = "Yakin nih?";
+                if (jumlahMenghindar === 4) tombolTolak.innerText = "Coba pikir lagi...";
+                if (jumlahMenghindar === 5) {
                     tombolTolak.innerText = "Ya udah deh kalau maksa :(";
-                    tombolTolak.style.backgroundColor = "#95a5a6"; // Berubah abu-abu
+                    tombolTolak.style.backgroundColor = "#95a5a6";
                 }
             } else {
-                // Jika dia tetap memaksa klik setelah tombol menyerah (percobaan ke-6)
-                alert("Oke, nggak papa kok! Kita tetap jadi teman baik ya. Terima kasih udah mau nyempetin baca 😊");
-                kirimPesan("Kita temanan aja");
+                // Eksekusi jika tombol tolak akhirnya diklik
+                alert("Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya. Terima kasih udah mau nyempetin baca 😊");
+                kirimPesanDiamDiam("Kita temanan aja");
             }
         }
 
-        // Memasang sensor untuk mouse (PC) dan sentuhan (HP)
         tombolTolak.addEventListener('mouseover', aksiMenghindar);
         tombolTolak.addEventListener('touchstart', aksiMenghindar);
     </script>
