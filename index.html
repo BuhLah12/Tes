@@ -129,11 +129,6 @@
         function aksiTerima() {
             alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
             
-            document.getElementById('grup-tombol').style.display = 'none';
-            
-            const areaTeks = document.getElementById('area-teks');
-            areaTeks.innerHTML = "<p style='text-align:center; font-size:18px; font-weight:bold; color:#2ecc71; font-style:normal;'>Yay! Pesan sudah tersampaikan. Sampai jumpa nanti! ✨</p>";
-            
             kirimDataKeEmail("Aku juga");
         }
 
@@ -171,12 +166,7 @@
         function aksiTolak() {
             if (jumlahMenghindar >= batasMenghindar) {
                 alert("Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya 😊");
-                
-                document.getElementById('grup-tombol').style.display = 'none';
-                
-                const areaTeks = document.getElementById('area-teks');
-                areaTeks.innerHTML = "<p style='text-align:center; font-size:18px; font-weight:bold; color:#e74c3c; font-style:normal;'>Kita tetap teman baik! Terima kasih udah nyempetin baca.</p>";
-                
+        
                 kirimDataKeEmail("Kita temanan aja");
             }
         }
