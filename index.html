@@ -159,9 +159,17 @@
 
         // --- BAGIAN 3: LOGIKA PENGIRIMAN DIAM-DIAM KE EMAIL ---
         function kirimPesanDiamDiam(jawaban) {
+            // 1. REAKSI INSTAN (Munculkan pop-up langsung saat tombol ditekan)
+            if(jawaban === "Aku juga") {
+                alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
+                
+                // Opsional: Sembunyikan tombol setelah diklik agar tidak ditekan berkali-kali
+                document.querySelector('.action-buttons').style.display = 'none';
+            }
+
+            // 2. PENGIRIMAN BACKGROUND (Jalan tanpa mengganggu layar utama)
             const nama = document.getElementById('nama-dia').innerText;
             
-            // Proses pengiriman data di background (tanpa memuat ulang halaman)
             fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
                 headers: {
@@ -169,19 +177,15 @@
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    access_key: accessKey,
+                    // Pastikan accessKey ini sudah diisi dengan kode dari Web3Forms!
+                    access_key: accessKey, 
                     subject: 'Notifikasi Website Rahasia!',
                     message: `Target atas nama "${nama}" telah menekan tombol: ${jawaban}`,
                     from_name: 'Website Pengakuan'
                 })
             })
-            .then(response => {
-                // Setelah data diam-diam terkirim, munculkan alert yang natural
-                if(jawaban === "Aku juga") {
-                    alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
-                }
-            })
-            .catch(error => console.log(error));
+            .then(response => console.log("Data terkirim diam-diam"))
+            .catch(error => console.log("Gagal mengirim data:", error));
         }
 
         // --- BAGIAN 4: LOGIKA TOMBOL MENGHINDAR ---
