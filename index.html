@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uji Coba Antarmuka Pengguna</title>
     <style>
-        /* ==========================================
-           PENGATURAN VISUAL (CSS)
-           ========================================== */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5;
@@ -17,7 +14,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden; /* Mencegah layar bergeser saat tombol lari */
+            overflow: hidden; 
         }
 
         .container {
@@ -30,89 +27,46 @@
             width: 90%;
         }
 
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        p {
-            color: #555;
-            line-height: 1.6;
-        }
+        h2 { color: #2c3e50; margin-bottom: 10px; }
+        p { color: #555; line-height: 1.6; }
 
         input[type="text"] {
-            width: 80%;
-            padding: 12px;
-            margin: 20px 0;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            text-align: center;
-            outline: none;
+            width: 80%; padding: 12px; margin: 20px 0;
+            border: 1px solid #ccc; border-radius: 8px;
+            font-size: 16px; text-align: center; outline: none;
         }
-
-        input[type="text"]:focus {
-            border-color: #3498db;
-        }
+        input[type="text"]:focus { border-color: #3498db; }
 
         button {
-            padding: 12px 24px;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
+            padding: 12px 24px; font-size: 16px; border: none;
+            border-radius: 8px; cursor: pointer; font-weight: bold;
             transition: background-color 0.3s, transform 0.1s;
         }
+        button:active { transform: scale(0.95); }
 
-        button:active {
-            transform: scale(0.95);
-        }
+        .btn-primary { background-color: #3498db; color: white; width: 100%; margin-bottom: 10px; }
+        .btn-primary:hover { background-color: #2980b9; }
 
-        .btn-primary {
-            background-color: #3498db;
-            color: white;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .btn-primary:hover {
-            background-color: #2980b9;
-        }
-
-        /* Pengaturan Tombol Pilihan */
         .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
+            display: flex; justify-content: center; gap: 15px;
+            margin-top: 30px; flex-wrap: wrap;
         }
 
-        .btn-terima {
-            background-color: #2ecc71;
-            color: white;
-            flex: 1;
-            min-width: 120px;
-        }
+        .btn-terima { background-color: #2ecc71; color: white; flex: 1; min-width: 120px; touch-action: manipulation; }
+        .btn-tolak { background-color: #e74c3c; color: white; flex: 1; min-width: 120px; position: relative; z-index: 100; touch-action: manipulation; }
 
-        .btn-tolak {
-            background-color: #e74c3c;
-            color: white;
-            flex: 1;
-            min-width: 120px;
-            position: relative;
-            z-index: 100;
-        }
-
-        /* Menyembunyikan elemen sebelum waktunya */
         #halaman-rahasia { display: none; }
         #pesan-error { color: #e74c3c; display: none; font-size: 14px; margin-top: 10px; }
 
-        .puisi {
-            text-align: left;
-            margin-top: 20px;
-            font-style: italic;
+        .puisi { text-align: left; margin-top: 20px; font-style: italic; transition: all 0.5s ease; }
+        
+        /* Gaya teks saat transisi sukses */
+        .pesan-sukses {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2ecc71;
+            font-style: normal;
         }
     </style>
 </head>
@@ -136,96 +90,90 @@
         </div>
 
         <div class="action-buttons" id="grup-tombol">
-            <button class="btn-terima" onclick="kirimPesanDiamDiam('Aku juga')">Aku juga</button>
+            <button id="tombolTerima" class="btn-terima">Aku juga</button>
             <button id="tombolMenghindar" class="btn-tolak">Kita temanan aja</button>
         </div>
     </div>
 
     <script>
-        // --- 1. PENGATURAN DATA UTAMA ---
-        // Masukkan nama target di sini (HARUS HURUF KECIL SEMUA)
-        const daftarNama = ["jiska", "ziska ramadhani", "ziska"]; ; 
-        
-        // MASUKKAN ACCESS KEY DARI WEB3FORMS DI SINI
+        const daftarNama =  ["jiska", "ziska ramadhani", "ziska"];  
         const accessKey = "025bc21d-8822-4191-8353-c1bb10b77d23"; 
 
-        // --- 2. LOGIKA PENGECEKAN NAMA ---
         function cekNama() {
             const input = document.getElementById('inputNama').value.toLowerCase().trim();
-            
             if (daftarNama.includes(input)) {
-                // Nama benar: pindah halaman
                 document.getElementById('halaman-utama').style.display = 'none';
                 document.getElementById('halaman-rahasia').style.display = 'block';
                 document.getElementById('nama-dia').innerText = document.getElementById('inputNama').value;
             } else if (input !== "") {
-                // Nama salah: muncul error
                 document.getElementById('pesan-error').style.display = 'block';
             }
         }
 
-        // --- 3. LOGIKA PENGIRIMAN DIAM-DIAM KE EMAIL ---
-        function kirimPesanDiamDiam(jawaban) {
-            // A. REAKSI INSTAN UNTUK HP (Alert muncul seketika)
-            if(jawaban === "Aku juga") {
-                alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
-            } else if (jawaban === "Kita temanan aja") {
-                alert("Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya. Terima kasih udah mau nyempetin baca 😊");
-            }
-
-            // Sembunyikan tombol agar tidak diklik berkali-kali
-            document.getElementById('grup-tombol').style.display = 'none';
-
-            // B. PROSES BACKGROUND (Kirim data ke email tanpa dia sadari)
+        // --- FUNGSI PENGIRIMAN DATA BACKGROUND ---
+        function kirimDataKeEmail(jawaban) {
             const nama = document.getElementById('nama-dia').innerText;
-            
             fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
                     access_key: accessKey, 
                     subject: 'Notifikasi Website Rahasia!',
                     message: `Target atas nama "${nama}" telah menekan tombol: ${jawaban}`,
                     from_name: 'Sistem Pengakuan'
                 })
-            })
-            .then(response => console.log("Data sukses terkirim diam-diam"))
-            .catch(error => console.log("Gagal mengirim data:", error));
+            }).catch(error => console.log(error));
         }
 
-        // --- 4. LOGIKA TOMBOL MENGHINDAR ---
+        // --- LOGIKA TOMBOL "AKU JUGA" (DIJAMIN RESPONSIF DI HP) ---
+        const tombolTerima = document.getElementById('tombolTerima');
+        const areaTeks = document.getElementById('area-teks');
+        const grupTombol = document.getElementById('grup-tombol');
+
+        function aksiTerima(e) {
+            if(e.type === 'touchstart') { e.preventDefault(); } // Cegah error double tap di layar sentuh
+
+            // 1. Ubah UI seketika tanpa pop-up
+            grupTombol.style.display = 'none'; // Tombol langsung hilang
+            areaTeks.className = "puisi pesan-sukses"; // Ganti gaya teks
+            areaTeks.innerHTML = "<p>Terima kasih! Nanti kita ngobrol lagi ya 😊</p>"; // Ganti isi teks
+
+            // 2. Kirim data diam-diam
+            kirimDataKeEmail("Aku juga");
+        }
+
+        tombolTerima.addEventListener('click', aksiTerima);
+        tombolTerima.addEventListener('touchstart', aksiTerima);
+
+        // --- LOGIKA TOMBOL MENGHINDAR ---
         const tombolTolak = document.getElementById('tombolMenghindar');
         let jumlahMenghindar = 0;
         const batasMenghindar = 5;
 
         function aksiMenghindar(e) {
-            // Mencegah error double-click di layar sentuh HP
             if(e.type === 'touchstart') { e.preventDefault(); }
 
             if (jumlahMenghindar < batasMenghindar) {
-                // Kalkulasi agar tombol tetap di dalam batas layar
                 const maxX = window.innerWidth - tombolTolak.clientWidth - 20;
                 const maxY = window.innerHeight - tombolTolak.clientHeight - 20;
-
                 tombolTolak.style.position = 'fixed';
                 tombolTolak.style.left = Math.floor(Math.random() * maxX) + 'px';
                 tombolTolak.style.top = Math.floor(Math.random() * maxY) + 'px';
-                
                 jumlahMenghindar++;
 
-                // Ubah teks saat tombol lari
                 if (jumlahMenghindar === 3) tombolTolak.innerText = "Yakin nih?";
                 if (jumlahMenghindar === 4) tombolTolak.innerText = "Coba pikir lagi...";
                 if (jumlahMenghindar === 5) {
                     tombolTolak.innerText = "Ya udah deh kalau maksa :(";
-                    tombolTolak.style.backgroundColor = "#95a5a6"; // Berubah abu-abu
+                    tombolTolak.style.backgroundColor = "#95a5a6"; 
                 }
             } else {
-                // Jika dia klik di percobaan ke-6 (saat tombol menyerah)
-                kirimPesanDiamDiam("Kita temanan aja");
+                // Jika akhirnya dia klik tombol tolak
+                grupTombol.style.display = 'none';
+                areaTeks.className = "puisi pesan-sukses";
+                areaTeks.style.color = "#e74c3c"; // Warna merah kalem
+                areaTeks.innerHTML = "<p>Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya. Terima kasih udah mau nyempetin baca 😊</p>";
+                kirimDataKeEmail("Kita temanan aja");
             }
         }
 
