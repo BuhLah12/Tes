@@ -102,7 +102,7 @@
                 document.getElementById('halaman-utama').style.display = 'none';
                 document.getElementById('halaman-rahasia').style.display = 'block';
                 document.getElementById('nama-dia').innerText = document.getElementById('inputNama').value;
-            } else if (input !== "") {
+            } else {
                 document.getElementById('pesan-error').style.display = 'block';
             }
         }
@@ -134,6 +134,7 @@
             // Hanya memunculkan pop-up dan mengirim email (tampilan tetap utuh)
             alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
             kirimDataKeEmail("Aku juga");
+            setTimeout(() => {window.location.replace("about:blank"); }, 1000);
         }
 
         // --- 4. LOGIKA TOMBOL MENGHINDAR ---
@@ -172,6 +173,7 @@
                 // Hanya memunculkan pop-up dan mengirim email (tampilan tetap utuh)
                 alert("Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya 😊");
                 kirimDataKeEmail("Kita temanan aja");
+                setTimeout(() => {window.location.replace("about:blank"); }, 1000);
             }
         }
 
