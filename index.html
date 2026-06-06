@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uji Coba Antarmuka Pengguna</title>
     <style>
-        /* PENGATURAN VISUAL (CSS) */
+        /* ==========================================
+           PENGATURAN VISUAL (CSS)
+           ========================================== */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5;
@@ -78,7 +80,7 @@
             background-color: #2980b9;
         }
 
-        /* Tombol di halaman rahasia */
+        /* Pengaturan Tombol Pilihan */
         .action-buttons {
             display: flex;
             justify-content: center;
@@ -103,7 +105,7 @@
             z-index: 100;
         }
 
-        /* Status awal elemen yang disembunyikan */
+        /* Menyembunyikan elemen sebelum waktunya */
         #halaman-rahasia { display: none; }
         #pesan-error { color: #e74c3c; display: none; font-size: 14px; margin-top: 10px; }
 
@@ -127,47 +129,54 @@
     <div id="halaman-rahasia" class="container">
         <h2>Hai, <span id="nama-dia"></span>.</h2>
         
-        <div class="puisi">
+         <div class="puisi">
             <p>Maaf ya kalau terlihat seperti kuesioner pengumpulan data biasa.</p>
             <p>Sebenarnya banyak yang di omongin, tapi terasa seperti menguap begitu saja setiap kali kita mengobrol. Di tengah rutinitasku yang bosenin, kehadiranmu selalu jadi sosok yang paling menyenangkan.</p>
             <p>Jadi, karena lisan ini seakan membisu, kubiarkan kode ini yang menyampaikannya: aku suka kamu.</p>
         </div>
 
-        <div class="action-buttons">
-            <button class="btn-terima" onclick="terima()">Aku juga</button>
+        <div class="action-buttons" id="grup-tombol">
+            <button class="btn-terima" onclick="kirimPesanDiamDiam('Aku juga')">Aku juga</button>
             <button id="tombolMenghindar" class="btn-tolak">Kita temanan aja</button>
         </div>
     </div>
 
     <script>
-        // --- BAGIAN 1: PENGATURAN DATA ---
-        const daftarNama =  ["jiska", "ziska ramadhani", "ziska"]; 
+        // --- 1. PENGATURAN DATA UTAMA ---
+        // Masukkan nama target di sini (HARUS HURUF KECIL SEMUA)
+        const daftarNama = ["jiska", "ziska ramadhani", "ziska"]; ; 
         
-        // MASUKKAN ACCESS KEY DARI EMAILMU DI SINI
+        // MASUKKAN ACCESS KEY DARI WEB3FORMS DI SINI
         const accessKey = "025bc21d-8822-4191-8353-c1bb10b77d23"; 
 
+        // --- 2. LOGIKA PENGECEKAN NAMA ---
         function cekNama() {
             const input = document.getElementById('inputNama').value.toLowerCase().trim();
+            
             if (daftarNama.includes(input)) {
+                // Nama benar: pindah halaman
                 document.getElementById('halaman-utama').style.display = 'none';
                 document.getElementById('halaman-rahasia').style.display = 'block';
                 document.getElementById('nama-dia').innerText = document.getElementById('inputNama').value;
             } else if (input !== "") {
+                // Nama salah: muncul error
                 document.getElementById('pesan-error').style.display = 'block';
             }
         }
 
-        // --- BAGIAN 3: LOGIKA PENGIRIMAN DIAM-DIAM KE EMAIL ---
+        // --- 3. LOGIKA PENGIRIMAN DIAM-DIAM KE EMAIL ---
         function kirimPesanDiamDiam(jawaban) {
-            // 1. REAKSI INSTAN (Munculkan pop-up langsung saat tombol ditekan)
+            // A. REAKSI INSTAN UNTUK HP (Alert muncul seketika)
             if(jawaban === "Aku juga") {
                 alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
-                
-                // Opsional: Sembunyikan tombol setelah diklik agar tidak ditekan berkali-kali
-                document.querySelector('.action-buttons').style.display = 'none';
+            } else if (jawaban === "Kita temanan aja") {
+                alert("Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya. Terima kasih udah mau nyempetin baca 😊");
             }
 
-            // 2. PENGIRIMAN BACKGROUND (Jalan tanpa mengganggu layar utama)
+            // Sembunyikan tombol agar tidak diklik berkali-kali
+            document.getElementById('grup-tombol').style.display = 'none';
+
+            // B. PROSES BACKGROUND (Kirim data ke email tanpa dia sadari)
             const nama = document.getElementById('nama-dia').innerText;
             
             fetch('https://api.web3forms.com/submit', {
@@ -177,42 +186,45 @@
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    // Pastikan accessKey ini sudah diisi dengan kode dari Web3Forms!
                     access_key: accessKey, 
                     subject: 'Notifikasi Website Rahasia!',
                     message: `Target atas nama "${nama}" telah menekan tombol: ${jawaban}`,
-                    from_name: 'Website Pengakuan'
+                    from_name: 'Sistem Pengakuan'
                 })
             })
-            .then(response => console.log("Data terkirim diam-diam"))
+            .then(response => console.log("Data sukses terkirim diam-diam"))
             .catch(error => console.log("Gagal mengirim data:", error));
         }
 
-        // --- BAGIAN 4: LOGIKA TOMBOL MENGHINDAR ---
+        // --- 4. LOGIKA TOMBOL MENGHINDAR ---
         const tombolTolak = document.getElementById('tombolMenghindar');
         let jumlahMenghindar = 0;
         const batasMenghindar = 5;
 
         function aksiMenghindar(e) {
+            // Mencegah error double-click di layar sentuh HP
             if(e.type === 'touchstart') { e.preventDefault(); }
 
             if (jumlahMenghindar < batasMenghindar) {
+                // Kalkulasi agar tombol tetap di dalam batas layar
                 const maxX = window.innerWidth - tombolTolak.clientWidth - 20;
                 const maxY = window.innerHeight - tombolTolak.clientHeight - 20;
+
                 tombolTolak.style.position = 'fixed';
                 tombolTolak.style.left = Math.floor(Math.random() * maxX) + 'px';
                 tombolTolak.style.top = Math.floor(Math.random() * maxY) + 'px';
+                
                 jumlahMenghindar++;
 
+                // Ubah teks saat tombol lari
                 if (jumlahMenghindar === 3) tombolTolak.innerText = "Yakin nih?";
                 if (jumlahMenghindar === 4) tombolTolak.innerText = "Coba pikir lagi...";
                 if (jumlahMenghindar === 5) {
                     tombolTolak.innerText = "Ya udah deh kalau maksa :(";
-                    tombolTolak.style.backgroundColor = "#95a5a6";
+                    tombolTolak.style.backgroundColor = "#95a5a6"; // Berubah abu-abu
                 }
             } else {
-                // Eksekusi jika tombol tolak akhirnya diklik
-                alert("Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya. Terima kasih udah mau nyempetin baca 😊");
+                // Jika dia klik di percobaan ke-6 (saat tombol menyerah)
                 kirimPesanDiamDiam("Kita temanan aja");
             }
         }
