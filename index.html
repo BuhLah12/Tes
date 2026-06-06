@@ -52,22 +52,12 @@
             margin-top: 30px; flex-wrap: wrap;
         }
 
-        .btn-terima { background-color: #2ecc71; color: white; flex: 1; min-width: 120px; touch-action: manipulation; }
-        .btn-tolak { background-color: #e74c3c; color: white; flex: 1; min-width: 120px; position: relative; z-index: 100; touch-action: manipulation; }
+        .btn-terima { background-color: #2ecc71; color: white; flex: 1; min-width: 120px; }
+        .btn-tolak { background-color: #e74c3c; color: white; flex: 1; min-width: 120px; position: relative; z-index: 100; }
 
         #halaman-rahasia { display: none; }
         #pesan-error { color: #e74c3c; display: none; font-size: 14px; margin-top: 10px; }
-
-        .puisi { text-align: left; margin-top: 20px; font-style: italic; transition: all 0.5s ease; }
-        
-        /* Gaya teks saat transisi sukses */
-        .pesan-sukses {
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: #2ecc71;
-            font-style: normal;
-        }
+        .puisi { text-align: left; margin-top: 20px; font-style: italic; }
     </style>
 </head>
 <body>
@@ -83,20 +73,23 @@
     <div id="halaman-rahasia" class="container">
         <h2>Hai, <span id="nama-dia"></span>.</h2>
         
-         <div class="puisi">
+        <div class="puisi">
             <p>Maaf ya kalau terlihat seperti kuesioner pengumpulan data biasa.</p>
             <p>Sebenarnya banyak yang di omongin, tapi terasa seperti menguap begitu saja setiap kali kita mengobrol. Di tengah rutinitasku yang bosenin, kehadiranmu selalu jadi sosok yang paling menyenangkan.</p>
             <p>Jadi, karena lisan ini seakan membisu, kubiarkan kode ini yang menyampaikannya: aku suka kamu.</p>
         </div>
 
         <div class="action-buttons" id="grup-tombol">
-            <button id="tombolTerima" class="btn-terima">Aku juga</button>
-            <button id="tombolMenghindar" class="btn-tolak">Kita temanan aja</button>
+            <button id="tombolTerima" class="btn-terima" onclick="aksiTerima()">Aku juga</button>
+            <button id="tombolMenghindar" class="btn-tolak" onclick="aksiTolak()">Kita temanan aja</button>
         </div>
     </div>
 
     <script>
-        const daftarNama =  ["jiska", "ziska ramadhani", "ziska"];  
+        // --- 1. DATA PENTING ---
+        const daftarNama =  ["jiska", "ziska ramadhani", "ziska"]; 
+        
+        // ⚠️ PENTING: Ganti dengan Access Key dari Web3Forms!
         const accessKey = "025bc21d-8822-4191-8353-c1bb10b77d23"; 
 
         function cekNama() {
@@ -110,73 +103,92 @@
             }
         }
 
-        // --- FUNGSI PENGIRIMAN DATA BACKGROUND ---
+        // --- 2. FUNGSI KIRIM EMAIL BACKGROUND ---
         function kirimDataKeEmail(jawaban) {
             const nama = document.getElementById('nama-dia').innerText;
+            
             fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify({
                     access_key: accessKey, 
                     subject: 'Notifikasi Website Rahasia!',
-                    message: `Target atas nama "${nama}" telah menekan tombol: ${jawaban}`,
+                    message: `Pesan baru! Target atas nama "${nama}" telah menekan tombol: ${jawaban}`,
                     from_name: 'Sistem Pengakuan'
                 })
-            }).catch(error => console.log(error));
+            })
+            .then(response => response.json())
+            .then(data => console.log("Status email:", data))
+            .catch(error => console.log("Gagal kirim:", error));
         }
 
-        // --- LOGIKA TOMBOL "AKU JUGA" (DIJAMIN RESPONSIF DI HP) ---
-        const tombolTerima = document.getElementById('tombolTerima');
-        const areaTeks = document.getElementById('area-teks');
-        const grupTombol = document.getElementById('grup-tombol');
-
-        function aksiTerima(e) {
-            if(e.type === 'touchstart') { e.preventDefault(); } // Cegah error double tap di layar sentuh
-
-            // 1. Ubah UI seketika tanpa pop-up
-            grupTombol.style.display = 'none'; // Tombol langsung hilang
-            areaTeks.className = "puisi pesan-sukses"; // Ganti gaya teks
-            areaTeks.innerHTML = "<p>Terima kasih! Nanti kita ngobrol lagi ya 😊</p>"; // Ganti isi teks
-
-            // 2. Kirim data diam-diam
+        // --- 3. LOGIKA TOMBOL "AKU JUGA" ---
+        function aksiTerima() {
+            // Munculkan notifikasi instan
+            alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
+            
+            // Sembunyikan tombol
+            document.getElementById('grup-tombol').style.display = 'none';
+            
+            // Ubah teks menjadi pesan sukses
+            const areaTeks = document.getElementById('area-teks');
+            areaTeks.innerHTML = "<p style='text-align:center; font-size:18px; font-weight:bold; color:#2ecc71; font-style:normal;'>Yay! Pesan sudah tersampaikan. Sampai jumpa nanti! ✨</p>";
+            
+            // Kirim email
             kirimDataKeEmail("Aku juga");
         }
 
-        tombolTerima.addEventListener('click', aksiTerima);
-        tombolTerima.addEventListener('touchstart', aksiTerima);
-
-        // --- LOGIKA TOMBOL MENGHINDAR ---
+        // --- 4. LOGIKA TOMBOL MENGHINDAR ---
         const tombolTolak = document.getElementById('tombolMenghindar');
         let jumlahMenghindar = 0;
         const batasMenghindar = 5;
 
         function aksiMenghindar(e) {
-            if(e.type === 'touchstart') { e.preventDefault(); }
+            // Cegah perilaku default layar sentuh HANYA jika tombol masih lari
+            if (jumlahMenghindar < batasMenghindar && e.type === 'touchstart') {
+                e.preventDefault(); 
+            }
 
             if (jumlahMenghindar < batasMenghindar) {
                 const maxX = window.innerWidth - tombolTolak.clientWidth - 20;
                 const maxY = window.innerHeight - tombolTolak.clientHeight - 20;
+                
                 tombolTolak.style.position = 'fixed';
                 tombolTolak.style.left = Math.floor(Math.random() * maxX) + 'px';
                 tombolTolak.style.top = Math.floor(Math.random() * maxY) + 'px';
+                
                 jumlahMenghindar++;
 
                 if (jumlahMenghindar === 3) tombolTolak.innerText = "Yakin nih?";
                 if (jumlahMenghindar === 4) tombolTolak.innerText = "Coba pikir lagi...";
-                if (jumlahMenghindar === 5) {
-                    tombolTolak.innerText = "Ya udah deh kalau maksa :(";
+                
+                if (jumlahMenghindar === batasMenghindar) {
+                    tombolTolak.innerText = "Ya udah deh :(";
                     tombolTolak.style.backgroundColor = "#95a5a6"; 
+                    // Fitur UX Baru: Kembalikan posisi tombol ke bawah agar mudah diklik!
+                    tombolTolak.style.position = 'static'; 
                 }
-            } else {
-                // Jika akhirnya dia klik tombol tolak
-                grupTombol.style.display = 'none';
-                areaTeks.className = "puisi pesan-sukses";
-                areaTeks.style.color = "#e74c3c"; // Warna merah kalem
-                areaTeks.innerHTML = "<p>Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya. Terima kasih udah mau nyempetin baca 😊</p>";
+            }
+        }
+
+        function aksiTolak() {
+            // Hanya bisa diklik jika sudah lari 5 kali
+            if (jumlahMenghindar >= batasMenghindar) {
+                alert("Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya 😊");
+                
+                document.getElementById('grup-tombol').style.display = 'none';
+                
+                const areaTeks = document.getElementById('area-teks');
+                areaTeks.innerHTML = "<p style='text-align:center; font-size:18px; font-weight:bold; color:#e74c3c; font-style:normal;'>Kita tetap teman baik! Terima kasih udah nyempetin baca.</p>";
+                
                 kirimDataKeEmail("Kita temanan aja");
             }
         }
 
+        // Event listener untuk memicu tombol lari
         tombolTolak.addEventListener('mouseover', aksiMenghindar);
         tombolTolak.addEventListener('touchstart', aksiMenghindar);
     </script>
