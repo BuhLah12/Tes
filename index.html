@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uji Coba Antarmuka Pengguna</title>
     <style>
+        /* ==========================================
+           PENGATURAN VISUAL (CSS)
+           ========================================== */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5;
@@ -73,7 +76,7 @@
     <div id="halaman-rahasia" class="container">
         <h2>Hai, <span id="nama-dia"></span>.</h2>
         
-        <div class="puisi">
+         <div class="puisi" id="area-teks>
             <p>Maaf ya kalau terlihat seperti kuesioner pengumpulan data biasa.</p>
             <p>Sebenarnya banyak yang di omongin, tapi terasa seperti menguap begitu saja setiap kali kita mengobrol. Di tengah rutinitasku yang bosenin, kehadiranmu selalu jadi sosok yang paling menyenangkan.</p>
             <p>Jadi, karena lisan ini seakan membisu, kubiarkan kode ini yang menyampaikannya: aku suka kamu.</p>
@@ -87,7 +90,11 @@
 
     <script>
         // --- 1. DATA PENTING ---
-        const daftarNama =  ["jiska", "ziska ramadhani", "ziska"]; 
+        // Ganti dengan nama target (HURUF KECIL SEMUA)
+        const daftarNama =  ["jiska", "ziska ramadhani", "ziska"];  
+        
+        // Ganti dengan URL Endpoint dari akun Formspree milikmu
+        const endpointFormspree = "https://formspree.io/f/mlgkgkon"; 
 
         function cekNama() {
             const input = document.getElementById('inputNama').value.toLowerCase().trim();
@@ -104,9 +111,6 @@
         function kirimDataKeEmail(jawaban) {
             const nama = document.getElementById('nama-dia').innerText;
             
-            // GANTI LINK INI DENGAN URL ENDPOINT FORMSPREE MILIKMU
-            const endpointFormspree = "https://formspree.io/f/mlgkgkon";
-            
             fetch(endpointFormspree, {
                 method: 'POST',
                 headers: {
@@ -120,28 +124,20 @@
                 })
             })
             .then(response => {
-                if (response.ok) {
-                    console.log("Status: Data sukses mendarat di email via Formspree!");
-                } else {
-                    console.log("Status: Gagal dikirim oleh server Formspree.");
-                }
+                if(response.ok) { console.log("Berhasil dikirim ke Formspree"); }
             })
-            .catch(error => console.log("Status: Terjadi kesalahan jaringan:", error));
+            .catch(error => console.log("Gagal kirim:", error));
         }
 
         // --- 3. LOGIKA TOMBOL "AKU JUGA" ---
         function aksiTerima() {
-            // Munculkan notifikasi instan
             alert("Terima kasih! Nanti kita ngobrol lagi ya 😊");
             
-            // Sembunyikan tombol
             document.getElementById('grup-tombol').style.display = 'none';
             
-            // Ubah teks menjadi pesan sukses
             const areaTeks = document.getElementById('area-teks');
             areaTeks.innerHTML = "<p style='text-align:center; font-size:18px; font-weight:bold; color:#2ecc71; font-style:normal;'>Yay! Pesan sudah tersampaikan. Sampai jumpa nanti! ✨</p>";
             
-            // Kirim email
             kirimDataKeEmail("Aku juga");
         }
 
@@ -151,7 +147,6 @@
         const batasMenghindar = 5;
 
         function aksiMenghindar(e) {
-            // Cegah perilaku default layar sentuh HANYA jika tombol masih lari
             if (jumlahMenghindar < batasMenghindar && e.type === 'touchstart') {
                 e.preventDefault(); 
             }
@@ -172,14 +167,12 @@
                 if (jumlahMenghindar === batasMenghindar) {
                     tombolTolak.innerText = "Ya udah deh :(";
                     tombolTolak.style.backgroundColor = "#95a5a6"; 
-                    // Fitur UX Baru: Kembalikan posisi tombol ke bawah agar mudah diklik!
                     tombolTolak.style.position = 'static'; 
                 }
             }
         }
 
         function aksiTolak() {
-            // Hanya bisa diklik jika sudah lari 5 kali
             if (jumlahMenghindar >= batasMenghindar) {
                 alert("Oke, nggak apa-apa kok! Kita tetap jadi teman baik ya 😊");
                 
@@ -192,7 +185,7 @@
             }
         }
 
-        // Event listener untuk memicu tombol lari
+        // Pemicu tombol lari
         tombolTolak.addEventListener('mouseover', aksiMenghindar);
         tombolTolak.addEventListener('touchstart', aksiMenghindar);
     </script>
